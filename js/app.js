@@ -1,5 +1,11 @@
 'use strict'
 let pagina = 1;
+let peliculas = "";
+
+let ultimaPelicula; /* variable indefinida <-- Para que limpie el observador y solo esté en el último */
+
+
+
 //Creamos el observador
 let observador = new IntersectionObserver((entradas, observador)=>{
     //console.log(entradas);
@@ -10,13 +16,13 @@ let observador = new IntersectionObserver((entradas, observador)=>{
         }
     });
 },{
-    rootMargin: '0px 0px 0px 0px',
-    threshold: 1.0
+    rootMargin: '0px 0px 200px 0px',
+    threshold: 0.5 /*  <-- Para que cargue cuando la imagen esté a la mitad */
 });
 
 
 
-let peliculas = "";
+
 const cargarProyecto = async () =>{
 
     try {
@@ -43,9 +49,17 @@ const cargarProyecto = async () =>{
 
         const peliculasEnPantalla = document.querySelectorAll('.contenedor .pelicula');
         //console.log(peliculasEnPantalla);
-        let ultimaPelicula = peliculasEnPantalla[peliculasEnPantalla.length -1];
-        //console.log(ultimaPelicula);
-        observador.observe(ultimaPelicula);
+
+
+        if (pagina < 1000) { /*  <-- Como tenemos un límite de páginas evitamos que el sitio se rompa */
+            if(ultimaPelicula){
+                observador.unobserve(ultimaPelicula); /*  <-- Hacemos que deje de mirarla con unobserve para optimizar el código */
+            }
+            ultimaPelicula = peliculasEnPantalla[peliculasEnPantalla.length -1];
+            //console.log(ultimaPelicula);
+            observador.observe(ultimaPelicula);
+            
+        }
         
     } catch (error) {
         console.log(error);
